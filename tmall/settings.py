@@ -16,6 +16,7 @@ ALLOWED_HOSTS = []
 CUSTOM_APPS = [
     'apps.shop',
     'apps.car',
+    'apps.account'
 ]
 
 # 扩展的第三方库
@@ -44,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'tmall.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  #路径拼接
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -63,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.shop.global_var.get_url',
             ],
         },
     },
@@ -73,9 +75,12 @@ WSGI_APPLICATION = 'tmall.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tmall',
-        'USER': 'root',
-        'PASSWORD': 'root'
+        'NAME':"tmall03",
+        "USER":"root",
+        "PASSWORD":"123456",
+        "HOST":"192.168.80.253",
+        "PORT":"3306",
+        "CHARSET":"utf8",
     }
 }
 # django 认证系统
@@ -102,7 +107,6 @@ USE_L10N = True
 USE_TZ = True
 # 通过浏览器地址栏访问静态资源的根路径
 STATIC_URL = '/static/'
-
 #
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -110,9 +114,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'apps/shop/static'),
+    os.path.join(BASE_DIR, 'apps/car/static'),
 )
 # 上传文件访问根路径
 MEDIA_URL = '/media/'
 # 指定上传目录的根路径
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # 如果在测试环境下,能够访问到我的上传的资源,需要在根目录下urls.py中配置
+# 'http://127.0.0.1:8000/static/
+TEMP_STATIC_URL = 'http://127.0.0.1:8000' + STATIC_URL
+TEMP_MEDIA_URL = 'http://127.0.0.1:8000' + MEDIA_URL

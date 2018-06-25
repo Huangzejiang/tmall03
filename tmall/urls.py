@@ -5,12 +5,13 @@ from django.conf.urls import url, include
 from django.views.static import serve
 import xadmin
 from tmall import settings
-
+from apps.shop import views
 urlpatterns = [
     url('xadmin/', xadmin.site.urls),
     # 商品模块
     url('shop/', include('apps.shop.urls')),
     url('car/', include('apps.car.urls')),
+    url('account/', include('apps.account.urls')),
     # 访问media下的所有资源
     url('^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
