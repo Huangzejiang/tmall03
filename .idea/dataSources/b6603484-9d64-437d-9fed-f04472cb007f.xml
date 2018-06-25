@@ -3,8 +3,6 @@
   <database-model serializer="dbm" rdbms="MYSQL" format-version="4.8">
     <root id="1">
       <ServerVersion>5.7.22</ServerVersion>
-      <DefaultEngine>InnoDB</DefaultEngine>
-      <DefaultTmpEngine>InnoDB</DefaultTmpEngine>
       <DefaultCasing>lower/lower</DefaultCasing>
     </root>
     <schema id="2" parent="1" name="adv">

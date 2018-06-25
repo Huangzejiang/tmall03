@@ -1,11 +1,10 @@
 import datetime
 import json
-
 from django.http import HttpResponse, JsonResponse
-
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
-
+from tmall import settings
+from tmall.settings import TEMP_MEDIA_URL
 """
 创建自定义的apps
 1.通过命令创建模块   startapp app_name
@@ -15,7 +14,6 @@ from django.core.urlresolvers import reverse
 注意:
 如果项目比较大的,最好是在apps下面新建一个templates的文件夹
 1>根目录的templates文件夹一般放一些公共的模板文件 母版 需要include的模板
-
 
 配置项目后台管理
 1> 导入xamdin 
@@ -27,7 +25,6 @@ from django.core.urlresolvers import reverse
 3.4> 通过命令   pip install -r  目录/xxx.txt
      例如: pip install -r requirements/xadmin.txt
 3.5 通过  pip list 查看是否安装成功
-
 4> 注册
     # 必须
     'xadmin',
@@ -39,7 +36,6 @@ from django.core.urlresolvers import reverse
 5.1> 在根目录在新建一个ext_apps
 5.2> 将xmadin的源代码 赋值到 ext_apps下面
 5.3> 将ext_apps 加入到项目 sys.path.insert(0, os.path.join(BASE_DIR, 'ext_apps'))
-
 6> 使用xadmin代替django admin  
     在根urls.py中 
      url('xadmin/', xadmin.site.urls), 
@@ -54,21 +50,17 @@ python manage.py createsuperuser
 9.1> http://127.0.0.1:8000/xadmin/
 9.2> 使用第8步的账号密码登录
 
+10> 定义全局的模板变量 
+备注    当我们的每个界面都需要用到某些数据的时候 可以定义全局的
+1>在项目的settings
 MTV开发
 1>在models中建立模型对象
 2>迁移
 t
 v
 """
+from .models import Navigation, Category, Banner, Shop, Property, PropertyValue, Review,SubMenu,SubMenu2
 
-# 数据库迁移出现问题
-'''
-1> django_migrations  表里的每一条对应一个app下的每次生产一个对应文件
-'''
-from .models import Navigation, Category, Banner, Shop, Property, PropertyValue, Review
-
-
-#
 def index(request):
     navigations = Navigation.objects.all()
     # 查询一级分类菜单数据
@@ -84,12 +76,10 @@ def index(request):
         # 商品信息
         shops = cate.shop_set.all()
         for shop in shops:
-            shop.images = shop.shopimage_set.all()
+            shop.image = shop.shopimage_set.filter(type='type_single').first()
         cate.shops = shops
-
     # 获取轮播图的数据
     banners = Banner.objects.all()
-
     # 获取商品信息
     # cate_shops = Category.objects.all()
     # for cate in cate_shops:
@@ -101,22 +91,6 @@ def index(request):
                                           'cate_list': cate_list,
                                           'banners': banners,
                                           })
-
-
-"""
-{
-status:200,
-msg :sucess',
-data:cate_list
-}
-#json {} 对应python的字典
-#json [] 对应python的列表
-# 支持基本类型  bool  数字  None  字符串
-
-python不支持对象转化json  
-
-"""
-
 
 def cate(request):
     result = {}
@@ -139,29 +113,6 @@ def cate(request):
 
     result.update(status=200, msg='success', data=cate_list)
     return HttpResponse(json.dumps(result), content_type='application/json')
-
-    """
-    前后端分离
-    用户请求服务器的静态文件(不经过)---> 浏览器开始解析html css js
-    ---->当浏览器js的ajax
-     ---->(客服端发送ajax请求)
-    --->views接口--->
-    返回响应的数据(json数据)
-    --->解析
-    --->dom操作
-    --->显示给用户
-
-    前后端不分离
-    浏览器访问服务器的资源路径 ---
-    views(从数据库拿数据---->
-    给模板)-->
-    渲染--->
-    显示给用户
-    """
-    # key: value
-    # 属性 = 值
-    # 把对象转化字典
-
 
 def model_to_dict(model):
     # vars(对象)获取对象所有的属性
@@ -186,34 +137,30 @@ def shop_detail(request, sid):
     properties = Property.objects.filter(cate_id=shop.cate.cate_id)
     for property in properties:
         # 获取商品的参数通过shop_id 商品 propertyvalue
-        property.value = PropertyValue.objects.get(property_id=716)
+        property.value = PropertyValue.objects.filter(property=property, shop=shop).first()
     # 获取商品的评论信息
-    reviews = Review.objects.filter(shop_id=147)
-    return render(request, 'shop_detail.html', {'shop': shop, 'properties': properties, 'reviews': reviews})
-
-
-"""
-1>使用form表单
-2>location.href
-3>使用重定向技术
-"""
-
-
-# render
-# render  url地址不会发生改变 本界面的刷新 TemplateResponse
-# redirect url地址会发生改变  相当于两次请求 可以是所有的地址
-
-# ?key=value
-
-# def search(request):
-#     key = request.GET.get('keyword')
-#     return redirect(reverse('search1', args=(key,)))
+    reviews = Review.objects.filter(shop=shop)
+    return render(request, 'shop_page.html', {'shop': shop, 'properties': properties, 'reviews': reviews})
 
 def search(request):
-    key = request.GET.get('keyword')
+    key = request.POST.get('keyword')
     shops = Shop.objects.filter(name__icontains=key)
     for shop in shops:
         # select  * from  shop_img  where type='type_single'
         shop.images = shop.shopimage_set.filter(type='type_single').values('shop_img_id', 'shop_id')
         shop.count = shop.review_set.count()
-    return render(request, 'search.html', {'shops': shops})
+    return render(request, 'shop_page.html', {'shops': shops})
+
+def login(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+
+
+def register(request):
+    if request.method == 'GET':
+        return render(request, 'register.html');
+
+def loginout(request):
+    del request.session["userinfo"]   #删除session缓存中存储的信息
+    return redirect("/shop/index/")
+

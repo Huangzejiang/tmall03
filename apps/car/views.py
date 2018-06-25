@@ -1,12 +1,7 @@
-from django.shortcuts import render
-
+import json
+from django.http import HttpResponse
+from django.shortcuts import render,redirect
 from apps.shop.models import ShopCar, Shop
-
-'''
-1> 选择商品 加入购物车
-2> 
-
-'''
 
 
 def add_car(request):
@@ -18,12 +13,63 @@ def add_car(request):
             ShopCar.objects.create(number=int(num), shop_id=int(shop_id), user_id=1)
     except:
         pass
-    return render(request, 'shop_detail.html', {'msg': 'success'})
+    return render(request, '', {'msg': 'success'})
 
 
-# 用户id
+
 def shop_car(request):
-    cars = ShopCar.objects.filter(user_id=1)
-    for car in cars:
-        car.shop.images = car.shop.shopimage_set.filter(type='type_single').first()
-    return render(request, 'shop_car.html', {'cars': cars})
+    req_session = request.session
+    temp = req_session.get('userinfo')
+    user_id = temp.get("uid")
+    if user_id:
+        # cars = ShopCar.objects.filter(user_id=user_id, status=1)
+        cars = ShopCar.objects.filter(user_id=user_id)
+        # cars = ShopCar.objects.filter(user_id=1, status=1)
+        for car in cars:
+            car.shop.image = car.shop.shopimage_set.filter(type='type_single').first()
+    return render(request, 'cart1.html', {'cars': cars})
+
+
+
+def buy_shop(request):
+    if request.method == 'POST':
+        # 获取用户提交的数据
+        cars = request.POST.get('cars')
+        cars = json.loads(cars)
+        for car in cars:
+            num = car['num']
+            car_id = car['car_id']
+            ShopCar.objects.filter(car_id=car_id).update(number=num, status=2)
+
+    #重定向到确认登录界面
+    return redirect('/car/confirm/')
+
+
+def confirm_buy_shop(request):
+    user_id = request.session.get('userinfo').get('uid')
+    if user_id:
+        cars = ShopCar.objects.filter(user_id=user_id, status=2)
+        for car in cars:
+            car.shop.image = car.shop.shopimage_set.filter(type='type_single').first()
+    return render(request, 'buy_page.html', {'cars': cars})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

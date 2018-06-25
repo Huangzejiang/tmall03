@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="tmall@localhost" uuid="6cb1d2fa-4149-411f-8c7a-b5870ad2bc36">
+    <data-source source="LOCAL" name="Django default" uuid="b6603484-9d64-437d-9fed-f04472cb007f">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>$PROJECT_DIR$/tmall/settings.py</remarks>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/tmall</jdbc-url>
+      <jdbc-url>jdbc:mysql://127.0.0.1/tmall</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
         <property name="zeroDateTimeBehavior" value="convertToNull" />
@@ -15,13 +17,11 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="Django default" uuid="b6603484-9d64-437d-9fed-f04472cb007f">
+    <data-source source="LOCAL" name="tmall03@192.168.80.253" uuid="330b2ee1-cf0a-4dfa-99ef-73a4d25380bb">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
-      <imported>true</imported>
-      <remarks>$PROJECT_DIR$/tmall/settings.py</remarks>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://127.0.0.1/tmall</jdbc-url>
+      <jdbc-url>jdbc:mysql://192.168.80.253:3306/tmall03</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
         <property name="zeroDateTimeBehavior" value="convertToNull" />

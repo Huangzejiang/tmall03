@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load  staticfiles %}
+{% block page_css %}
+    <link rel="stylesheet" href="{% static 'css/carts.css' %}">
+{% endblock %}
+<!-- parent()获取父类元素    prevAll() 获取所有兄弟元素 -->
+<!-- 核心思想  读写一体    get first set  all-->
+{% block page_jq %}
+    <script src="{% static 'js/carts.js' %}"></script>
+    <script type="text/javascript">
+        // 选中的数量的数组
+        nums = [];
+        // 选中对应的carid的数组
+        // 服务器给客服端传递json数据
+        //  首先
+        ids = [];
+        cars = [];
+        $(function () {
+            $('#buy_btn').click(function () {
+                    let $sum_input = $('.order_content input:checked')
+                        .parent()
+                        .nextAll('.list_amount')
+                        .find('.sum');
+                    /**
+                     * 遍历选中元素的数量的input元素
+                     */
+                    $sum_input.each(function () {
+                        //nums.push($(this).val());
+                        //ids.push($(this).attr('id'));
+                        car = {
+                            num: $(this).val(),
+                            car_id: $(this).attr('id'),
+                        };
+                        cars.push(car)
+                    });
+                    data = {
+                        cars: JSON.stringify(cars),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    };
+                    /**
+                     *   $.post('{% url 'buy' %}', data)
+                     *   当使用ajax传递数组 添加属性traditional:true
+                     */
+                    $.ajax({
+                        url: '{% url 'buy' %}',
+                        type: 'post',
+                        data: data,
+                        traditional: true,
+                    })
+                }
+            )
+        })
+    </script>
+
+
+{% endblock %}
+
+{% block page_head %}
+    {% include 'include/comm/top.html' %}
+{% endblock %}
+{% block page_content %}
+    {% include 'cart_page.html' %}
+{% endblock %}

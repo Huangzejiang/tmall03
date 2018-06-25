@@ -210,7 +210,7 @@ class ShopCar(models.Model):
     shop = models.ForeignKey(Shop, models.DO_NOTHING, verbose_name='商品ID')
     user = models.ForeignKey('User', models.DO_NOTHING, db_column='uid', verbose_name='用户ID')
     order = models.ForeignKey('Order', on_delete=models.SET_NULL, db_column='oid', null=True, verbose_name='商品ID')
-    # 1正常 -1 删除 ,0 禁止 2
+    # 1正常 -1删除 ,0 禁止 2
     status = models.IntegerField(default=1)
 
     def __str__(self):
